@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Ultimate Fashion Store</title>
+
+<style>
+body { font-family: Arial; margin:0; background:#f5f5f5; }
+
+header {
+    background:#ff3f6c;
+    color:white;
+    padding:15px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+input { padding:6px; width:200px; }
+
+.tabs { text-align:center; margin:10px; }
+
+.container {
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+}
+
+.card {
+    background:white;
+    width:200px;
+    margin:15px;
+    padding:10px;
+    border-radius:10px;
+    text-align:center;
+    box-shadow:0 0 10px rgba(0,0,0,0.2);
+}
+
+.card img {
+    width:100%;
+    height:220px;
+    object-fit:cover;
+}
+
+button {
+    background:#ff3f6c;
+    color:white;
+    border:none;
+    padding:8px;
+    margin:5px;
+    cursor:pointer;
+}
+
+/* Cart */
+#cartBox {
+    position:fixed;
+    right:0;
+    top:0;
+    width:280px;
+    height:100%;
+    background:white;
+    padding:15px;
+    display:none;
+}
+
+/* Product Detail */
+#productView {
+    display:none;
+    padding:20px;
+    background:white;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h2>Fashion Store 🛍️</h2>
+    <input type="text" id="search" placeholder="Search..." onkeyup="searchProducts()">
+    <div onclick="toggleCart()" style="cursor:pointer;">
+        Cart 🛒 (<span id="count">0</span>)
+    </div>
+</header>
+
+<div class="tabs">
+    <button onclick="filterCategory('all')">All</button>
+    <button onclick="filterCategory('men')">Men</button>
+    <button onclick="filterCategory('women')">Women</button>
+</div>
+
+<!-- PRODUCT LIST -->
+<div class="container" id="products"></div>
+
+<!-- PRODUCT DETAIL -->
+<div id="productView"></div>
+
+<!-- CART -->
+<div id="cartBox">
+<h3>Your Cart</h3>
+<ul id="cartItems"></ul>
+<h4>Total: ₹<span id="total">0</span></h4>
+<button onclick="checkout()">Checkout</button>
+</div>
+
+<script>
+
+let allProducts = [
+
+ // MEN
+ {name:"Men Shirt", price:999, category:"men", img:"https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf"},
+ {name:"Men Jeans", price:1499, category:"men", img:"https://images.unsplash.com/photo-1584865288642-42078afe6942"},
+ {name:"Men T-Shirt", price:599, category:"men", img:"https://images.unsplash.com/photo-1523381210434-271e8be1f52b"},
+
+ // WOMEN
+ {name:"Women Dress", price:1299, category:"women", img:"https://images.unsplash.com/photo-1520975922203-bc0f4a6b42e4"},
+ {name:"Women Top", price:799, category:"women", img:"https://images.unsplash.com/photo-1524255684952-d7185b509571"},
+ {name:"Women Jeans", price:1399, category:"women", img:"https://images.unsplash.com/photo-1541099649105-f69ad21f3246"}
+
+];
+
+let currentProducts = [...allProducts];
+let cart = [];
+
+// DISPLAY PRODUCTS
+function displayProducts(products){
+ let container = document.getElementById("products");
+ container.innerHTML = "";
+ document.getElementById("productView").style.display = "none";
+
+ products.forEach((p,i)=>{
+  container.innerHTML += `
+  <div class="card">
+   <img src="${p.img}">
+   <h3>${p.name}</h3>
+   <p>₹${p.price}</p>
+   <button onclick="viewProduct(${i})">View</button>
+   <button onclick="addToCart(${i})">Add to Cart</button>
+  </div>`;
+ });
+}
+
+// FILTER
+function filterCategory(cat){
+ if(cat==="all") currentProducts=[...allProducts];
+ else currentProducts = allProducts.filter(p=>p.category===cat);
+
+ displayProducts(currentProducts);
+}
+
+// SEARCH
+function searchProducts(){
+ let val = document.getElementById("search").value.toLowerCase();
+ let filtered = currentProducts.filter(p=>p.name.toLowerCase().includes(val));
+ displayProducts(filtered);
+}
+
+// VIEW PRODUCT
+function viewProduct(i){
+ let p = currentProducts[i];
+ let box = document.getElementById("productView");
+
+ box.style.display="block";
+ box.innerHTML = `
+ <h2>${p.name}</h2>
+ <img src="${p.img}" style="width:200px"><br>
+ <h3>Price: ₹${p.price}</h3>
+ <button onclick="addToCart(${i})">Add to Cart</button>
+ `;
+}
+
+// CART
+function addToCart(i){
+ cart.push(currentProducts[i]);
+ updateCart();
+}
+
+function updateCart(){
+ document.getElementById("count").innerText = cart.length;
+
+ let list = document.getElementById("cartItems");
+ list.innerHTML="";
+ let total=0;
+
+ cart.forEach(item=>{
+  list.innerHTML += `<li>${item.name} - ₹${item.price}</li>`;
+  total += item.price;
+ });
+
+ document.getElementById("total").innerText = total;
+}
+
+function toggleCart(){
+ let box = document.getElementById("cartBox");
+ box.style.display = box.style.display==="block"?"none":"block";
+}
+
+function checkout(){
+ alert("Order placed successfully 🎉");
+ cart=[];
+ updateCart();
+}
+
+displayProducts(allProducts);
+
+</script>
+
+</body>
+</html>
